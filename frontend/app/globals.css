@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  :root {
+    --font-geist-sans: 'Geist', system-ui, -apple-system, sans-serif;
+    --font-geist-mono: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-gray-900 text-white;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.06];
+  }
+
+  .glass-card {
+    @apply glass rounded-xl p-6;
+  }
+
+  .glass-button {
+    @apply glass px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-white/[0.08] active:scale-[0.98];
+  }
+
+  .glass-input {
+    @apply w-full glass rounded-lg px-4 py-3 text-white placeholder-gray-400 outline-none focus:border-purple-500 transition-colors;
+  }
+
+  /* Form elements */
+  .input-group {
+    @apply space-y-2;
+  }
+
+  .input-label {
+    @apply text-sm font-medium text-gray-300;
+  }
+
+  .form-row {
+    @apply flex items-center gap-2;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-purple-700 active:scale-[0.98];
+  }
+
+  /* Error state */
+  .error-message {
+    @apply text-sm text-red-400 mt-1;
+  }
+}
+
+/* Utilities */
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent;
+  }
+
+  /* Primary gradient */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600;
+  }
+
+  /* Glow effect */
+  .glow {
+    @apply shadow-[0_0_20px_rgba(147,51,234,0.5)];
+  }
+
+  /* Primary color shades */
+  .text-primary {
+    @apply text-purple-400;
+  }
+
+  .text-primary-hover {
+    @apply text-purple-300;
+  }
+
+  .bg-primary {
+    @apply bg-purple-600;
+  }
+
+  .bg-primary-hover {
+    @apply bg-purple-700;
+  }
+}
+
+/* Animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
+}
+
+/* Selection color */
+::selection {
+  @apply bg-purple-600/30 text-white;
+}
