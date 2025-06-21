@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+*.local
+
+# Production builds
+/backend/dist
+/frontend/.next
+/frontend/out
+/frontend/build
+
+# Testing
+coverage/
+.nyc_output
+playwright-report/
+test-results/
+*/test-results/
+lighthouse-report/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Debug
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build outputs
+dist/
+build/
+out/
