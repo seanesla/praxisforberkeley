@@ -16,7 +16,7 @@ const protectedRoutes = [
 const authRoutes = ['/login', '/register', '/forgot-password'];
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/', '/about', '/pricing', '/contact', '/demo'];
+const publicRoutes = ['/', '/about', '/pricing', '/contact', '/demo', '/flashcards-demo', '/test-flashcards', '/flashcards-full-demo', '/flashcards-real-test', '/test-api', '/flashcards-auth-test'];
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;

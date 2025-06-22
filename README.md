@@ -4,14 +4,15 @@
   <h3>🚀 A Revolutionary AI-Powered Knowledge Management System</h3>
   
   <p>
-    <strong>Built by:</strong> Sean Esla • Saif Alnaqbi • Kai Shinoda
+    <strong>Built by:</strong> Sean Esla • Saif Alnaqbi • Kai Shimoda
   </p>
 </div>
 
 ---
 
 ## Inspiration
-In a world overflowing with powerful productivity tools, we found a strange paradox: the most feature-rich note-taking apps like Notion and Obsidian often come with a steep learning curve that alienates beginners. Users are forced to choose between overwhelming complexity and simplistic, uninspired design.
+In a world overflowing with powerful productivity tools, we found a strange
+paradox: the most feature-rich note-taking apps like Notion and Obsidian often come with a steep learning curve that alienates beginners. Users are forced to choose between overwhelming complexity and simplistic, uninspired design.
 We asked: Why can't a note-taking app be both powerful and intuitive? Why can't it adapt to how we think, instead of forcing us to adapt to it?
 Praxis is our answer. It's designed to be the ultimate thinking tool, a smart canvas that helps you transform theory into practice. It connects your ideas, grounds your research, and even talks back to you, all through a beautifully simple interface.
 

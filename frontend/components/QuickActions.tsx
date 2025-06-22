@@ -31,11 +31,11 @@ export function QuickActions() {
       onClick: () => router.push('/notes/new?smart=true')
     },
     {
-      title: 'Generate Flashcards',
-      description: 'Create study cards from documents',
+      title: 'Study Flashcards',
+      description: 'Review and create study cards',
       icon: AcademicCapIcon,
       color: 'from-blue-600 to-blue-700',
-      onClick: () => router.push('/flashcards/generate')
+      onClick: () => router.push('/dashboard/flashcards')
     },
     {
       title: 'Build Mind Map',
