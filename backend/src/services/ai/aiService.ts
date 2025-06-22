@@ -45,25 +45,44 @@ export class AIService {
       logger.debug('Getting Anthropic provider', { userId });
 
       const provider = 'anthropic';
+      const cacheKey = `${provider}_${userId}`;
       
-      // Check if provider is already initialized
-      if (this.providers.has(provider)) {
-        return this.providers.get(provider)!;
+      // Check if provider is already initialized for this user
+      if (this.providers.has(cacheKey)) {
+        return this.providers.get(cacheKey)!;
       }
 
-      // Use hardcoded Anthropic API key from environment
-      const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
-      if (!anthropicApiKey) {
-        logger.error('ANTHROPIC_API_KEY not configured in environment');
+      // Import required modules
+      const { supabase } = await import('../config/supabase');
+      const { EncryptionService } = await import('../utils/encryption');
+
+      // Get API key from database for the user
+      const { data: apiKeyData, error } = await supabase
+        .from('api_keys')
+        .select('encrypted_key')
+        .eq('user_id', userId)
+        .eq('provider', 'anthropic')
+        .eq('is_active', true)
+        .single();
+
+      if (error || !apiKeyData || !apiKeyData.encrypted_key) {
+        logger.info('No Anthropic API key found for user', { userId });
         return null;
       }
 
-      // Initialize Anthropic provider with hardcoded key
-      const providerInstance = new AnthropicService(anthropicApiKey);
+      // Decrypt the API key
+      const decryptedApiKey = EncryptionService.decrypt(apiKeyData.encrypted_key);
+      if (!decryptedApiKey) {
+        logger.error('Failed to decrypt API key');
+        return null;
+      }
 
-      // Cache the provider instance
-      this.providers.set(provider, providerInstance);
-      logger.info('Anthropic provider initialized successfully');
+      // Initialize Anthropic provider with user's API key
+      const providerInstance = new AnthropicService(decryptedApiKey);
+
+      // Cache the provider instance for this user
+      this.providers.set(cacheKey, providerInstance);
+      logger.info('Anthropic provider initialized successfully with user API key');
 
       return providerInstance;
     } catch (error) {
@@ -111,8 +130,18 @@ export class AIService {
   }
 
   // Clear cached providers (useful when API keys change)
-  static clearProviderCache() {
-    logger.info('Clearing AI provider cache');
-    this.providers.clear();
+  static clearProviderCache(userId?: string) {
+    if (userId) {
+      logger.info('Clearing AI provider cache for user', { userId });
+      // Clear all providers for specific user
+      for (const [key] of this.providers) {
+        if (key.includes(userId)) {
+          this.providers.delete(key);
+        }
+      }
+    } else {
+      logger.info('Clearing entire AI provider cache');
+      this.providers.clear();
+    }
   }
 }
