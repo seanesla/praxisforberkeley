@@ -3,8 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { createServer } from 'http';
-import { supabase, checkSupabaseConnection } from './config/supabase';
+import { checkSupabaseConnection } from './config/supabase';
 import authRoutes from './routes/auth';
 import documentsRoutes from './routes/documents';
 import notesRoutes from './routes/notes';
@@ -12,7 +11,6 @@ import aiRoutes from './routes/ai';
 import commandRoutes from './routes/command';
 import flashcardsRoutes from './routes/flashcards';
 import mindmapsRoutes from './routes/mindmaps';
-import { initializeWebSocket } from './services/websocket';
 import logger, { stream } from './utils/logger';
 
 // Load environment variables
