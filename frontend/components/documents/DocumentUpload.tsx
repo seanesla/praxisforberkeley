@@ -72,10 +72,11 @@ export function DocumentUpload({ isOpen, onClose, onUploadComplete }: DocumentUp
           ));
         }, 200);
 
-        const response = await fetch('/api/documents/upload', {
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+        const response = await fetch(`${backendUrl}/api/documents/upload`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
           },
           body: formData
         });

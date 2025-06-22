@@ -1,6 +1,6 @@
 import { AIService } from './ai/aiService';
 import { supabase } from '../config/supabase';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 import {
   MindMap,
@@ -93,6 +93,11 @@ export class MindMapService {
         ]
       });
       
+      if (!response || !response.content) {
+        logger.error('No response from AI service');
+        throw new Error('Failed to get AI response');
+      }
+      
       const concepts = JSON.parse(response.content);
       return Array.isArray(concepts) ? concepts : [];
     } catch (error) {
@@ -139,6 +144,11 @@ export class MindMapService {
           { role: 'user', content: prompt }
         ]
       });
+      
+      if (!response || !response.content) {
+        logger.error('No response from AI service');
+        throw new Error('Failed to get AI response');
+      }
       
       return JSON.parse(response.content);
     } catch (error) {

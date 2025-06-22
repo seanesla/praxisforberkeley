@@ -1,8 +1,7 @@
 import express from 'express';
-import { authenticateToken } from '../middleware/auth';
+import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { supabase } from '../config/supabase';
 import { FlashcardService } from '../services/flashcardService';
-import { AuthRequest } from '../types/express';
 import logger from '../utils/logger';
 
 const router = express.Router();
@@ -12,7 +11,7 @@ router.get('/', authenticateToken as any, async (req: AuthRequest, res): Promise
   logger.info('[FLASHCARDS] Fetching flashcards');
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { document_id, limit = 50, offset = 0 } = req.query;
     
     let query = supabase
@@ -47,7 +46,7 @@ router.post('/generate/:documentId', authenticateToken as any, async (req: AuthR
   logger.info('[FLASHCARDS] Generating flashcards from document');
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { documentId } = req.params;
     const { numCards = 10 } = req.body;
     
@@ -80,9 +79,21 @@ router.post('/generate/:documentId', authenticateToken as any, async (req: AuthR
       documentId,
       documentTitle: document.title,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error('[FLASHCARDS] Generation error:', error);
-    res.status(500).json({ error: 'Failed to generate flashcards' });
+    
+    // Provide more specific error messages
+    if (error.message?.includes('no AI response')) {
+      res.status(503).json({ 
+        error: 'AI service is currently unavailable. Please ensure ANTHROPIC_API_KEY is configured.',
+        details: 'The flashcard generation service requires a valid AI provider API key.'
+      });
+    } else {
+      res.status(500).json({ 
+        error: 'Failed to generate flashcards',
+        message: error.message || 'An unexpected error occurred' 
+      });
+    }
   }
 });
 
@@ -91,7 +102,7 @@ router.put('/:id', authenticateToken as any, async (req: AuthRequest, res): Prom
   logger.info('[FLASHCARDS] Updating flashcard');
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { id } = req.params;
     const { difficulty_rating, review_date } = req.body;
     
@@ -132,7 +143,7 @@ router.delete('/:id', authenticateToken as any, async (req: AuthRequest, res): P
   logger.info('[FLASHCARDS] Deleting flashcard');
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { id } = req.params;
     
     const { error } = await supabase
@@ -157,10 +168,10 @@ router.delete('/:id', authenticateToken as any, async (req: AuthRequest, res): P
 
 // Get due flashcards for review
 router.get('/due', authenticateToken as any, async (req: AuthRequest, res): Promise<void> => {
-  logger.info('Fetching due flashcards', { userId: req.user.id });
+  logger.info('Fetching due flashcards', { userId: req.user?.id });
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { limit = 20 } = req.query;
     
     const dueFlashcards = await FlashcardService.getDueFlashcards(userId, Number(limit));
@@ -177,7 +188,7 @@ router.post('/study-session', authenticateToken as any, async (req: AuthRequest,
   logger.info('Creating study session');
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { flashcard_ids } = req.body;
     
     if (!flashcard_ids || !Array.isArray(flashcard_ids)) {
@@ -199,7 +210,7 @@ router.get('/stats', authenticateToken as any, async (req: AuthRequest, res): Pr
   logger.info('Fetching study statistics');
   
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const stats = await FlashcardService.getStudyStats(userId);
     
     res.json({ stats });

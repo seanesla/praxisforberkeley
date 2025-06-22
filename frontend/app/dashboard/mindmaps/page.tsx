@@ -35,9 +35,12 @@ export default function MindMapsPage() {
       console.log('Loaded mind maps:', maps);
 
       // Fetch documents for generation
-      const response = await fetch('/api/documents', {
+      const token = localStorage.getItem('auth_token');
+      
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${backendUrl}/api/documents`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {

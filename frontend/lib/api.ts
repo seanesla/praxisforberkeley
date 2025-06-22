@@ -260,6 +260,31 @@ class ApiClient {
   async healthCheck() {
     return this.request<{ status: string; message: string }>('/health');
   }
+
+  // HTTP method shortcuts
+  async get<T = any>(endpoint: string, options?: RequestInit & { requestId?: string }) {
+    return this.request<T>(endpoint, { ...options, method: 'GET' });
+  }
+
+  async post<T = any>(endpoint: string, data?: any, options?: RequestInit & { requestId?: string }) {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+  }
+
+  async put<T = any>(endpoint: string, data?: any, options?: RequestInit & { requestId?: string }) {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async delete<T = any>(endpoint: string, options?: RequestInit & { requestId?: string }) {
+    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+  }
 }
 
 export const apiClient = new ApiClient();

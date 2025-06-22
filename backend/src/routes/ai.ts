@@ -6,7 +6,6 @@ import { RAGService } from '../services/ragService';
 import logger from '../utils/logger';
 
 const router = express.Router();
-const aiService = new AIService();
 const ragService = new RAGService();
 
 // Chat with AI
@@ -30,7 +29,7 @@ router.post('/chat', authenticateToken, async (req, res) => {
       });
     } else {
       // General AI chat
-      response = await aiService.chat(message, {
+      response = await AIService.chat(message, {
         userId: authReq.user!.id,
         ...context
       });
@@ -46,25 +45,44 @@ router.post('/chat', authenticateToken, async (req, res) => {
 // Get instant context suggestions for smart notes
 router.post('/context-suggestions', authenticateToken, async (req, res) => {
   const authReq = req as AuthRequest;
-  const { noteContent, currentSentence, documentIds } = req.body;
+  const { noteContent, currentSentence, recentContext, documentIds, cursorPosition } = req.body;
   
   try {
-    // Get relevant context from documents
+    // Use recent context for better relevance
+    const queryText = recentContext || currentSentence || noteContent;
+    
+    // Get relevant context from documents with enhanced options
     const suggestions = await ragService.getContextSuggestions(
-      currentSentence || noteContent,
+      queryText,
       {
         userId: authReq.user!.id,
         documentIds,
-        limit: 3
+        limit: 5, // Get more suggestions for better filtering
+        minScore: 0.7 // 70% similarity threshold as per README
       }
     );
 
-    // Format suggestions for ghost text display
-    const formattedSuggestions = suggestions.map(s => ({
+    // Get document titles for better source attribution
+    const documentTitles = await Promise.all(
+      suggestions.map(async (s) => {
+        const { data: doc } = await supabase
+          .from('documents')
+          .select('title')
+          .eq('id', s.metadata.documentId)
+          .single();
+        return doc?.title || 'Unknown Document';
+      })
+    );
+
+    // Format suggestions with enhanced metadata
+    const formattedSuggestions = suggestions.map((s, index) => ({
       text: s.content,
       source: s.metadata.source,
+      documentId: s.metadata.documentId,
+      documentTitle: documentTitles[index],
       relevance: s.score,
-      documentId: s.metadata.documentId
+      pageNumber: s.metadata.pageNumber,
+      paragraph: s.metadata.paragraph
     }));
 
     res.json({ suggestions: formattedSuggestions });
@@ -97,7 +115,7 @@ router.post('/summarize', authenticateToken, async (req, res) => {
     }
 
     // Generate summary
-    const summary = await aiService.generateSummary(document.content, {
+    const summary = await AIService.generateSummary(document.content, {
       level,
       title: document.title
     });
@@ -132,7 +150,7 @@ router.post('/generate-flashcards', authenticateToken, async (req, res) => {
     }
 
     // Generate flashcards using AI
-    const flashcards = await aiService.generateFlashcards(document.content, {
+    const flashcards = await AIService.generateFlashcards(document.content, {
       count,
       difficulty: 'mixed',
       documentTitle: document.title
@@ -198,7 +216,7 @@ router.post('/generate-mindmap', authenticateToken, async (req, res) => {
     }
 
     // Generate mind map structure using AI
-    const mindMapData = await aiService.generateMindMap(content);
+    const mindMapData = await AIService.generateMindMap(content);
 
     // Save mind map
     const { data: mindMap, error } = await supabase
@@ -234,7 +252,7 @@ router.post('/change-perspective', authenticateToken, async (req, res) => {
   }
   
   try {
-    const rewritten = await aiService.changePerspective(content, perspective);
+    const rewritten = await AIService.changePerspective(content, perspective);
     res.json({ rewritten });
   } catch (error) {
     logger.error('Perspective change error:', error);
@@ -264,7 +282,7 @@ router.post('/detect-gaps', authenticateToken, async (req, res) => {
     }
 
     // Detect knowledge gaps
-    const gaps = await aiService.detectKnowledgeGaps(documents);
+    const gaps = await AIService.detectKnowledgeGaps(documents);
     
     res.json({ gaps });
   } catch (error) {

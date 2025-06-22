@@ -40,9 +40,12 @@ export default function DocumentsPage() {
   const fetchDocuments = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/documents', {
+      const token = localStorage.getItem('auth_token');
+      
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${backendUrl}/api/documents`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       

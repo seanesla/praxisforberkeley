@@ -4,6 +4,7 @@ import { AuthProvider } from '@/contexts/auth';
 import { ProviderProvider } from '@/contexts/provider';
 import { GlobalErrorHandler } from '@/components/GlobalErrorHandler';
 import { ToastContainer, ToastProvider } from '@/components/Toast';
+import { defaultMetadata } from '@/utils/metadata';
 import './globals.css';
 
 const geistSans = Geist({ 
@@ -16,10 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: 'Praxis - Your Ideas, Realized',
-  description: 'AI-powered knowledge management system',
-};
+export const metadata: Metadata = defaultMetadata;
 
 export const viewport = {
   width: 'device-width',

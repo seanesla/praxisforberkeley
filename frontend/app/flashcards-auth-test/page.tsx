@@ -17,7 +17,7 @@ export default function FlashcardsAuthTestPage() {
 
   // Check if already logged in
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+    const storedToken = localStorage.getItem('auth_token');
     if (storedToken) {
       setToken(storedToken);
       setIsAuthenticated(true);
@@ -43,7 +43,7 @@ export default function FlashcardsAuthTestPage() {
       const data = await response.json();
       const authToken = data.token;
       
-      localStorage.setItem('token', authToken);
+      localStorage.setItem('auth_token', authToken);
       setToken(authToken);
       setIsAuthenticated(true);
       
@@ -275,7 +275,7 @@ Key Concepts:
           
           <button
             onClick={() => {
-              localStorage.removeItem('token');
+              localStorage.removeItem('auth_token');
               setIsAuthenticated(false);
               setToken('');
             }}

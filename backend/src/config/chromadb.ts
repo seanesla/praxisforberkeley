@@ -1,5 +1,5 @@
 import { ChromaClient } from 'chromadb';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 
 export class ChromaDBConfig {
   private static client: ChromaClient | null = null;

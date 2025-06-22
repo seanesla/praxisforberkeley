@@ -32,7 +32,7 @@ test.describe('Flashcards Feature', () => {
     
     // Set auth token in localStorage
     await page.evaluate((token) => {
-      localStorage.setItem('token', token);
+      localStorage.setItem('auth_token', token);
     }, token);
 
     // 2. Now navigate to dashboard

@@ -47,7 +47,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
     }
 
     // Get linked documents
-    if (note.document_ids?.length > 0) {
+    if (note.document_ids && note.document_ids.length > 0) {
       const { data: documents } = await supabase
         .from('documents')
         .select('id, title')

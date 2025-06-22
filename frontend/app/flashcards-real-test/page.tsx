@@ -25,7 +25,7 @@ export default function FlashcardsRealTestPage() {
   useEffect(() => {
     // Create a test token to bypass auth
     const testToken = 'test-token-' + Date.now();
-    localStorage.setItem('token', testToken);
+    localStorage.setItem('auth_token', testToken);
     console.log('Set test token:', testToken);
   }, []);
 
@@ -42,7 +42,7 @@ export default function FlashcardsRealTestPage() {
       // Fetch flashcards
       const flashcardsResponse = await fetch('http://localhost:5001/api/flashcards', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -57,7 +57,7 @@ export default function FlashcardsRealTestPage() {
       // Fetch documents
       const documentsResponse = await fetch('http://localhost:5001/api/documents', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -86,7 +86,7 @@ export default function FlashcardsRealTestPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify({
           title: 'React Hooks Guide',
@@ -254,7 +254,7 @@ export default function FlashcardsRealTestPage() {
                 <p>Documents: {documents.length} loaded</p>
                 <p>Flashcards: {flashcards.length} loaded</p>
                 <p>Backend URL: http://localhost:5001</p>
-                <p>Token: {localStorage.getItem('token') ? 'Set' : 'Not set'}</p>
+                <p>Token: {localStorage.getItem('auth_token') ? 'Set' : 'Not set'}</p>
               </div>
             </div>
 

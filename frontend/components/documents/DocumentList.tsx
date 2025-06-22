@@ -18,12 +18,12 @@ interface Document {
   id: string;
   title: string;
   content: string;
-  file_name: string;
+  file_url: string | null;
   file_type: string;
-  file_size: number;
+  file_size?: number;
   created_at: string;
   updated_at: string;
-  embeddings_generated: boolean;
+  embeddings_generated?: boolean;
 }
 
 interface DocumentListProps {
@@ -61,10 +61,11 @@ export function DocumentList({ documents, viewMode, onRefresh }: DocumentListPro
 
   const handleDelete = async (documentId: string) => {
     try {
-      const response = await fetch(`/api/documents/${documentId}`, {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${backendUrl}/api/documents/${documentId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
 
@@ -122,7 +123,7 @@ export function DocumentList({ documents, viewMode, onRefresh }: DocumentListPro
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium text-gray-400 bg-gray-700 px-2 py-1 rounded">
-                    {getFileExtension(doc.file_name)}
+                    {getFileExtension(doc.title)}
                   </span>
                   <div className="relative">
                     <button
@@ -159,7 +160,7 @@ export function DocumentList({ documents, viewMode, onRefresh }: DocumentListPro
 
               {/* Metadata */}
               <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>{formatFileSize(doc.file_size)}</span>
+                <span>{doc.file_size ? formatFileSize(doc.file_size) : 'Unknown size'}</span>
                 <span>{formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}</span>
               </div>
 
@@ -225,9 +226,9 @@ export function DocumentList({ documents, viewMode, onRefresh }: DocumentListPro
                   </div>
                 </div>
                 <div className="flex items-center gap-4 mt-1 text-sm text-gray-400">
-                  <span>{getFileExtension(doc.file_name)}</span>
+                  <span>{getFileExtension(doc.title)}</span>
                   <span>•</span>
-                  <span>{formatFileSize(doc.file_size)}</span>
+                  <span>{doc.file_size ? formatFileSize(doc.file_size) : 'Unknown size'}</span>
                   <span>•</span>
                   <span>{formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}</span>
                 </div>

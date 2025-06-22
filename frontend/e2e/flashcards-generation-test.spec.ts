@@ -104,7 +104,7 @@ Key Concepts:
     
     // Set the token in localStorage
     await page.evaluate((authToken) => {
-      localStorage.setItem('token', authToken);
+      localStorage.setItem('auth_token', authToken);
     }, token);
     
     // Reload to apply auth

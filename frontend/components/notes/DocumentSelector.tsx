@@ -27,9 +27,10 @@ export function DocumentSelector({ selectedDocuments, onSelectionChange }: Docum
 
   const fetchDocuments = async () => {
     try {
-      const response = await fetch('/api/documents', {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+      const response = await fetch(`${backendUrl}/api/documents`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       

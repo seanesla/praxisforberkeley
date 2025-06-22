@@ -1,6 +1,6 @@
 import { VectorStoreService } from './vectorStore';
 import { ChatMessage } from './ai/aiService';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import { 
   RAGContext, 
   SourceReference, 
@@ -324,6 +324,80 @@ Instructions for using this context:
       }
     } catch (error) {
       logger.error('Failed to clean expired cache', error);
+    }
+  }
+
+  /**
+   * Query RAG system with documents
+   */
+  async query(query: string, options: any = {}): Promise<any> {
+    try {
+      const { userId, documentIds, includeMetadata } = options;
+      
+      // Search for relevant content
+      const searchResults = await VectorStoreService.searchDocumentsEnhanced(
+        userId,
+        query,
+        {
+          nResults: 10,
+          documentIds,
+          includeMetadata,
+          rerank: true,
+          minRelevance: 0.3
+        }
+      );
+
+      // Format results
+      const results = searchResults.map(result => ({
+        content: result.text,
+        metadata: result.metadata,
+        relevance: result.relevance || 0,
+        documentId: result.metadata?.documentId
+      }));
+
+      return {
+        query,
+        results,
+        totalResults: results.length
+      };
+    } catch (error) {
+      logger.error('Error in RAG query:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get context suggestions for smart notes
+   */
+  async getContextSuggestions(query: string, options: any = {}): Promise<any[]> {
+    try {
+      const { userId, documentIds, limit = 5, minScore = 0.7 } = options;
+      
+      // Search for relevant content
+      const searchResults = await VectorStoreService.searchDocumentsEnhanced(
+        userId,
+        query,
+        {
+          nResults: limit,
+          documentIds,
+          includeMetadata: true,
+          rerank: true,
+          minRelevance: minScore
+        }
+      );
+
+      // Format as suggestions
+      return searchResults.map(result => ({
+        content: result.text,
+        metadata: {
+          ...result.metadata,
+          source: result.metadata?.title || 'Unknown Source'
+        },
+        score: result.relevance || 0
+      }));
+    } catch (error) {
+      logger.error('Error getting context suggestions:', error);
+      return [];
     }
   }
 }

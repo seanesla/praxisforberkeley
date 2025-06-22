@@ -52,8 +52,8 @@ function LoginForm() {
     <>
       <AnimatedLoginLogo />
       
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-light text-white mb-2">
+      <div className="text-center mb-3">
+        <h1 className="text-3xl font-light text-white">
           Welcome back
         </h1>
         <p className="text-base text-gray-400">
@@ -67,7 +67,7 @@ function LoginForm() {
         </p>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form className="space-y-3" onSubmit={handleSubmit}>
         {error && (
           <motion.div
             className="glass-card p-4 border-red-500/20 bg-red-500/5"
@@ -96,7 +96,7 @@ function LoginForm() {
           </motion.div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="input-group">
             <label htmlFor="email" className="input-label">
               Email Address

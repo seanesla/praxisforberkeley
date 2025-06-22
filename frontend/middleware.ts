@@ -16,7 +16,7 @@ const protectedRoutes = [
 const authRoutes = ['/login', '/register', '/forgot-password'];
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/', '/about', '/pricing', '/contact', '/demo', '/flashcards-demo', '/test-flashcards', '/flashcards-full-demo', '/flashcards-real-test', '/test-api', '/flashcards-auth-test', '/test-mindmaps'];
+const publicRoutes = ['/', '/about', '/pricing', '/contact', '/demo', '/flashcards-demo', '/test-flashcards', '/flashcards-full-demo', '/flashcards-real-test', '/test-api', '/flashcards-auth-test', '/test-mindmaps', '/podcast', '/physics-demo'];
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
@@ -50,7 +50,13 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  
+  // Allow microphone for podcast page, deny for others
+  if (path === '/podcast' || path.startsWith('/dashboard/podcast')) {
+    response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(self), camera=()');
+  } else {
+    response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  }
   
   // Content Security Policy
   const isDevelopment = process.env.NODE_ENV === 'development';

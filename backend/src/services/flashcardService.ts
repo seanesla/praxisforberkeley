@@ -1,6 +1,6 @@
 import { AIService } from './ai/aiService';
 import { supabase } from '../config/supabase';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Flashcard,
@@ -119,6 +119,11 @@ export class FlashcardService {
         ]
       });
       
+      if (!response || !response.content) {
+        logger.error('No response from AI service');
+        throw new Error('Failed to generate flashcards - no AI response');
+      }
+      
       const flashcards = JSON.parse(response.content);
       return flashcards.map((card: any) => ({
         ...card,
@@ -126,7 +131,7 @@ export class FlashcardService {
       }));
     } catch (error) {
       logger.error('Error generating basic flashcards', error);
-      return [];
+      throw error; // Re-throw to handle at higher level
     }
   }
   
@@ -172,6 +177,11 @@ export class FlashcardService {
         ]
       });
       
+      if (!response || !response.content) {
+        logger.error('No response from AI service');
+        throw new Error('Failed to generate flashcards - no AI response');
+      }
+      
       const flashcards = JSON.parse(response.content);
       return flashcards.map((card: any) => ({
         ...card,
@@ -179,7 +189,7 @@ export class FlashcardService {
       }));
     } catch (error) {
       logger.error('Error generating cloze flashcards', error);
-      return [];
+      throw error; // Re-throw to handle at higher level
     }
   }
   
@@ -226,6 +236,11 @@ export class FlashcardService {
         ]
       });
       
+      if (!response || !response.content) {
+        logger.error('No response from AI service');
+        throw new Error('Failed to generate flashcards - no AI response');
+      }
+      
       const flashcards = JSON.parse(response.content);
       return flashcards.map((card: any) => ({
         ...card,
@@ -233,7 +248,7 @@ export class FlashcardService {
       }));
     } catch (error) {
       logger.error('Error generating multiple choice flashcards', error);
-      return [];
+      throw error; // Re-throw to handle at higher level
     }
   }
   

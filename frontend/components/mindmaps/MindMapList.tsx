@@ -10,7 +10,8 @@ import {
   TrashIcon,
   PencilIcon,
   EyeIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 
 interface MindMapListProps {
@@ -117,9 +118,9 @@ export default function MindMapList({ mindMaps, onDelete, onRefresh }: MindMapLi
               </h3>
               
               {map.document_id && (
-                <div className="flex items-center gap-1 text-xs text-gray-400 mb-3">
-                  <DocumentTextIcon className="h-3 w-3" />
-                  <span>From document</span>
+                <div className="flex items-center gap-2 text-xs text-purple-400 mb-3">
+                  <SparklesIcon className="h-3 w-3" />
+                  <span>AI-generated from document</span>
                 </div>
               )}
               
@@ -165,7 +166,10 @@ export default function MindMapList({ mindMaps, onDelete, onRefresh }: MindMapLi
                       {map.document_id && (
                         <>
                           <span>•</span>
-                          <span>From document</span>
+                          <span className="flex items-center gap-1">
+                            <SparklesIcon className="h-3 w-3" />
+                            AI-generated
+                          </span>
                         </>
                       )}
                       <span>•</span>

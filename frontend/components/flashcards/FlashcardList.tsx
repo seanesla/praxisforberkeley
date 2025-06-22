@@ -176,7 +176,7 @@ export default function FlashcardList({ flashcards, onStartStudy, onRefresh }: F
                           const response = await fetch(`/api/flashcards/${flashcard.id}`, {
                             method: 'DELETE',
                             headers: {
-                              'Authorization': `Bearer ${localStorage.getItem('token')}`
+                              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
                             }
                           });
                           if (response.ok) {

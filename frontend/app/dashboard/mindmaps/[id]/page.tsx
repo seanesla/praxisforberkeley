@@ -28,7 +28,7 @@ const MindMapControls = dynamic(
   { ssr: false }
 );
 
-export default function MindMapViewPage({ params }: { params: { id: string } }) {
+export default function MindMapViewPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [mindMap, setMindMap] = useState<MindMap | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,14 +37,16 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
   const [hasChanges, setHasChanges] = useState(false);
   const [physicsEnabled, setPhysicsEnabled] = useState(false);
   const [physicsPreset, setPhysicsPreset] = useState<'forceDirected' | 'gravity' | 'space' | 'molecular' | 'network'>('forceDirected');
+  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null);
 
   useEffect(() => {
-    loadMindMap();
-  }, [params.id]);
+    params.then(p => setResolvedParams(p));
+  }, [params]);
 
-  const loadMindMap = async () => {
+  const loadMindMap = useCallback(async () => {
+    if (!resolvedParams?.id) return;
     try {
-      const data = await mindmapsApi.getMindMap(params.id);
+      const data = await mindmapsApi.getMindMap(resolvedParams.id);
       setMindMap(data);
       setError(null);
     } catch (error) {
@@ -53,11 +55,22 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
     } finally {
       setLoading(false);
     }
-  };
+  }, [resolvedParams]);
+
+  useEffect(() => {
+    if (resolvedParams?.id) {
+      loadMindMap();
+    }
+  }, [resolvedParams, loadMindMap]);
 
   const handleDataChange = useCallback((newData: MindMapData) => {
     if (mindMap) {
-      setMindMap({ ...mindMap, data: newData });
+      // Update the metadata with the new full structure
+      const updatedData = {
+        ...mindMap.data,
+        metadata: newData
+      };
+      setMindMap({ ...mindMap, data: updatedData });
       setHasChanges(true);
     }
   }, [mindMap]);
@@ -82,10 +95,11 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
   const handleLayoutChange = (layoutType: MindMapLayout['type']) => {
     if (!mindMap) return;
 
+    const currentMetadata = mindMap.data?.metadata || { nodes: [{ id: mindMap.data.id, text: mindMap.data.text, type: 'root', position: { x: 0, y: 0 }, expanded: true }], connections: [] };
     const updatedData: MindMapData = {
-      ...mindMap.data,
+      ...currentMetadata,
       layout: {
-        ...mindMap.data.layout,
+        ...currentMetadata.layout,
         type: layoutType
       }
     };
@@ -161,7 +175,7 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
             <div>
               <h1 className="text-xl font-semibold">{mindMap.title}</h1>
               <p className="text-sm text-gray-400">
-                {mindMap.data.nodes.length} nodes • {mindMap.data.connections.length} connections
+                {mindMap.data?.metadata?.nodes?.length || 1} nodes • {mindMap.data?.metadata?.connections?.length || 0} connections
               </p>
             </div>
           </div>
@@ -215,10 +229,10 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
       </div>
 
       {/* Canvas Container */}
-      <div className="flex-1 relative bg-gray-950">
+      <div className="flex-1 relative bg-gray-950" style={{ minHeight: '500px' }}>
         {physicsEnabled ? (
           <MindMapCanvasPhysics
-            data={mindMap.data}
+            data={mindMap.data?.metadata || { nodes: [{ id: mindMap.data.id, text: mindMap.data.text, type: 'root', position: { x: 0, y: 0 }, expanded: true }], connections: [] }}
             onDataChange={handleDataChange}
             editable={true}
             physicsEnabled={physicsEnabled}
@@ -226,7 +240,7 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
           />
         ) : (
           <MindMapCanvas
-            data={mindMap.data}
+            data={mindMap.data?.metadata || { nodes: [{ id: mindMap.data.id, text: mindMap.data.text, type: 'root', position: { x: 0, y: 0 }, expanded: true }], connections: [] }}
             onDataChange={handleDataChange}
             editable={true}
           />

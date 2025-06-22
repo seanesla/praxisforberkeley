@@ -65,3 +65,24 @@ logs/
 dist/
 build/
 out/
+
+# Uploads
+backend/uploads/
+
+# Screenshots (optional - uncomment if you don't want to track test screenshots)
+# frontend/screenshots/
+
+# Duplicate files pattern
+*\ 2
+*\ 2.*
+*\ 2/
+
+# Test-specific files
+frontend/temp-test-*
+test-*.js
+
+# Database working files
+*-fixed.sql
+*-step*.sql
+alter-*.sql
+create-*-only.sql

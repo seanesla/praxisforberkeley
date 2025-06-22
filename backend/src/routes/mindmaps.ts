@@ -10,7 +10,7 @@ const router = express.Router();
 // Get all mind maps for the authenticated user
 router.get('/', authenticateToken as any, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     logger.info('[MINDMAPS] Fetching mind maps for user:', userId);
 
     const { data: mindMaps, error } = await supabase
@@ -41,7 +41,7 @@ router.get('/', authenticateToken as any, async (req: AuthRequest, res: Response
 // Get a specific mind map
 router.get('/:id', authenticateToken as any, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const mindMapId = req.params.id;
 
     logger.info('[MINDMAPS] Fetching mind map:', { userId, mindMapId });
@@ -76,7 +76,7 @@ router.get('/:id', authenticateToken as any, async (req: AuthRequest, res: Respo
 // Create a new mind map
 router.post('/', authenticateToken as any, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const { document_id, title, data } = req.body;
 
     logger.info('[MINDMAPS] Creating new mind map:', { userId, document_id, title });
@@ -134,7 +134,7 @@ router.post('/', authenticateToken as any, async (req: AuthRequest, res: Respons
 // Generate a mind map from a document
 router.post('/generate/:documentId', authenticateToken as any, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const documentId = req.params.documentId;
 
     logger.info('[MINDMAPS] Generating mind map for document:', { userId, documentId });
@@ -201,7 +201,7 @@ router.post('/generate/:documentId', authenticateToken as any, async (req: AuthR
 // Update a mind map
 router.put('/:id', authenticateToken as any, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const mindMapId = req.params.id;
     const { title, data } = req.body;
 
@@ -258,7 +258,7 @@ router.put('/:id', authenticateToken as any, async (req: AuthRequest, res: Respo
 // Delete a mind map
 router.delete('/:id', authenticateToken as any, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const mindMapId = req.params.id;
 
     logger.info('[MINDMAPS] Deleting mind map:', { userId, mindMapId });

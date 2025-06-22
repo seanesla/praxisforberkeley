@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -19,10 +19,6 @@ import 'reactflow/dist/style.css';
 import MindMapNode from './MindMapNode';
 import { MindMapData, MindMapNode as MindMapNodeType } from '@/types';
 
-const nodeTypes = {
-  mindMapNode: MindMapNode,
-};
-
 interface MindMapCanvasProps {
   data: MindMapData;
   onDataChange?: (data: MindMapData) => void;
@@ -33,6 +29,31 @@ function MindMapCanvasContent({ data, onDataChange, editable = true }: MindMapCa
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
+
+  // Memoize nodeTypes to avoid React Flow warnings
+  const nodeTypes = useMemo(() => ({
+    mindMapNode: MindMapNode,
+  }), []);
+
+  // Memoize edge types
+  const edgeTypes = useMemo(() => ({}), []);
+
+  const handleToggleExpand = useCallback((nodeId: string) => {
+    setNodes((nds) => 
+      nds.map((node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              expanded: !node.data.expanded
+            }
+          };
+        }
+        return node;
+      })
+    );
+  }, [setNodes]);
 
   // Convert MindMapData to ReactFlow format
   useEffect(() => {
@@ -62,7 +83,7 @@ function MindMapCanvasContent({ data, onDataChange, editable = true }: MindMapCa
 
     setNodes(flowNodes);
     setEdges(flowEdges);
-  }, [data, setNodes, setEdges]);
+  }, [data, setNodes, setEdges, handleToggleExpand]);
 
   // Auto-layout on initial load
   useEffect(() => {
@@ -70,23 +91,6 @@ function MindMapCanvasContent({ data, onDataChange, editable = true }: MindMapCa
       fitView({ padding: 0.2, duration: 800 });
     }, 100);
   }, [fitView]);
-
-  const handleToggleExpand = useCallback((nodeId: string) => {
-    setNodes((nds) => 
-      nds.map((node) => {
-        if (node.id === nodeId) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              expanded: !node.data.expanded
-            }
-          };
-        }
-        return node;
-      })
-    );
-  }, [setNodes]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -119,7 +123,7 @@ function MindMapCanvasContent({ data, onDataChange, editable = true }: MindMapCa
   );
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full" style={{ minHeight: '600px', height: '600px', position: 'relative' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -128,6 +132,7 @@ function MindMapCanvasContent({ data, onDataChange, editable = true }: MindMapCa
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         attributionPosition="bottom-left"
       >

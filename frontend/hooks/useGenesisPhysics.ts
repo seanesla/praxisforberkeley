@@ -124,7 +124,7 @@ export function useGenesisPhysics({
       const response = await fetch(`${serverUrl}/api/physics/reset`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -142,7 +142,7 @@ export function useGenesisPhysics({
       const response = await fetch(`${serverUrl}/api/physics/pause`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -160,7 +160,7 @@ export function useGenesisPhysics({
       const response = await fetch(`${serverUrl}/api/physics/resume`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -179,7 +179,7 @@ export function useGenesisPhysics({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify(bodyConfig)
       });
@@ -202,7 +202,7 @@ export function useGenesisPhysics({
       const response = await fetch(`${serverUrl}/api/physics/remove_body/${bodyId}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -221,7 +221,7 @@ export function useGenesisPhysics({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify(constraintConfig)
       });
@@ -244,7 +244,7 @@ export function useGenesisPhysics({
       const response = await fetch(`${serverUrl}/api/physics/load_preset/${presetName}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       

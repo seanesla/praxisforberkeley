@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Logo } from '@/components/Logo';
-import { SmartNoteEditor } from '@/components/notes/SmartNoteEditor';
+import { EnhancedSmartNoteEditor } from '@/components/notes/EnhancedSmartNoteEditor';
 import { DocumentSelector } from '@/components/notes/DocumentSelector';
 import {
   SparklesIcon,
@@ -59,11 +59,12 @@ export default function NewNotePage() {
     try {
       setIsSaving(true);
       
-      const response = await fetch('/api/notes', {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${backendUrl}/api/notes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify({
           title,
@@ -77,7 +78,7 @@ export default function NewNotePage() {
       if (response.ok) {
         const data = await response.json();
         if (!isAutoSave) {
-          router.push(`/notes/${data.note.id}`);
+          router.push(`/dashboard/notes/${data.note.id}`);
         }
       }
     } catch (error) {
@@ -186,11 +187,12 @@ export default function NewNotePage() {
             )}
 
             {/* Editor */}
-            <SmartNoteEditor
+            <EnhancedSmartNoteEditor
               content={content}
               onChange={setContent}
               selectedDocuments={selectedDocuments}
               isSmartNote={isSmart}
+              onSave={() => saveNote(false)}
             />
           </div>
 
@@ -235,9 +237,11 @@ export default function NewNotePage() {
               <ul className="text-xs text-gray-400 space-y-2">
                 {isSmart ? (
                   <>
-                    <li>• Pause typing to see AI suggestions</li>
-                    <li>• Press Tab to accept suggestions</li>
-                    <li>• Link documents for better context</li>
+                    <li>• Pause for 1.5 seconds to see ghost text</li>
+                    <li>• Press Tab to accept, Esc to dismiss</li>
+                    <li>• Link documents for better suggestions</li>
+                    <li>• 70%+ relevance suggestions only</li>
+                    <li>• Source attribution shown on accept</li>
                   </>
                 ) : (
                   <>

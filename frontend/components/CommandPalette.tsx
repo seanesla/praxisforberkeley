@@ -149,15 +149,26 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
     
     // Features
     {
-      id: 'podcast-mode',
+      id: 'start-podcast',
       name: 'Start Podcast Mode',
-      description: 'Have a conversation about your documents',
+      description: 'Have a voice conversation about your documents',
       icon: MicrophoneIcon,
       action: () => {
         router.push('/podcast');
         onClose();
       },
-      keywords: ['talk', 'voice', 'audio']
+      keywords: ['voice', 'talk', 'conversation', 'audio', 'speak']
+    },
+    {
+      id: 'socratic-dialogue',
+      name: 'Start Socratic Dialogue',
+      description: 'Learn through guided questions',
+      icon: AcademicCapIcon,
+      action: () => {
+        router.push('/socratic');
+        onClose();
+      },
+      keywords: ['learn', 'questions', 'study', 'understand', 'dialogue']
     },
     {
       id: 'settings',

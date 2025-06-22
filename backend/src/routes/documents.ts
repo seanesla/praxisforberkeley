@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { supabase } from '../config/supabase';
-import { VectorStoreService } from '../services/vectorStore';
+// import { VectorStoreService } from '../services/vectorStore';
 import logger from '../utils/logger';
 import fs from 'fs/promises';
 import path from 'path';
@@ -10,7 +10,6 @@ import path from 'path';
 import pdfParse from 'pdf-parse';
 
 const router = express.Router();
-const vectorStore = new VectorStoreService();
 
 // Configure multer for file uploads
 const upload = multer({
@@ -18,7 +17,7 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     const allowedTypes = ['application/pdf', 'text/plain', 'text/markdown', 
                          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                          'application/json'];
@@ -46,10 +45,10 @@ router.get('/', authenticateToken, async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch documents' });
     }
 
-    res.json({ documents });
+    return res.json({ documents });
   } catch (error) {
     logger.error('Documents fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -70,10 +69,10 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    res.json({ document });
+    return res.json({ document });
   } catch (error) {
     logger.error('Document fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -110,19 +109,31 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
     }
     
     // Create document in database
+    // Shorten file type to fit in varchar(50)
+    let shortFileType = file.mimetype;
+    if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      shortFileType = 'application/docx';
+    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      shortFileType = 'application/xlsx';
+    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
+      shortFileType = 'application/pptx';
+    } else if (shortFileType.length > 50) {
+      shortFileType = shortFileType.substring(0, 50);
+    }
+    
+    const insertData = {
+      user_id: authReq.user!.id,
+      title: req.body.title || file.originalname,
+      content,
+      file_url: null, // Set to null to avoid length issues
+      file_type: shortFileType
+    };
+    
+    console.log('Inserting document with data:', insertData);
+    
     const { data: document, error } = await supabase
       .from('documents')
-      .insert({
-        user_id: authReq.user!.id,
-        title: req.body.title || file.originalname,
-        content,
-        file_name: file.originalname,
-        file_type: file.mimetype,
-        file_size: file.size,
-        metadata: {
-          upload_date: new Date().toISOString(),
-        }
-      })
+      .insert(insertData)
       .select()
       .single();
 
@@ -162,7 +173,7 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
     // Clean up uploaded file
     await fs.unlink(filePath);
 
-    res.json({ 
+    return res.json({ 
       message: 'Document uploaded successfully',
       document 
     });
@@ -182,7 +193,7 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
       }
     }
     
-    res.status(500).json({ 
+    return res.status(500).json({ 
       error: 'Failed to upload document',
       details: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -217,10 +228,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
     //   });
     // }
 
-    res.json({ document });
+    return res.json({ document });
   } catch (error) {
     logger.error('Document update error:', error);
-    res.status(500).json({ error: 'Failed to update document' });
+    return res.status(500).json({ error: 'Failed to update document' });
   }
 });
 
@@ -244,17 +255,17 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     // TODO: Re-enable when VectorStore is properly configured
     // await vectorStore.deleteDocument(id);
 
-    res.json({ message: 'Document deleted successfully' });
+    return res.json({ message: 'Document deleted successfully' });
   } catch (error) {
     logger.error('Document delete error:', error);
-    res.status(500).json({ error: 'Failed to delete document' });
+    return res.status(500).json({ error: 'Failed to delete document' });
   }
 });
 
 // Search documents
 router.post('/search', authenticateToken, async (req, res) => {
   const authReq = req as AuthRequest;
-  const { query, limit = 10 } = req.body;
+  const { query } = req.body;
   
   if (!query) {
     return res.status(400).json({ error: 'Query is required' });
@@ -277,10 +288,10 @@ router.post('/search', authenticateToken, async (req, res) => {
         results: results
       });
 
-    res.json({ results });
+    return res.json({ results });
   } catch (error) {
     logger.error('Document search error:', error);
-    res.status(500).json({ error: 'Search failed' });
+    return res.status(500).json({ error: 'Search failed' });
   }
 });
 

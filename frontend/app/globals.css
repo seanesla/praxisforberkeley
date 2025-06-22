@@ -44,12 +44,12 @@
   }
 
   .auth-card {
-    @apply bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-2xl shadow-purple-500/20 rounded-2xl p-8;
+    @apply bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-2xl shadow-purple-500/20 rounded-2xl p-4 sm:p-5;
   }
 
   /* Form elements */
   .input-group {
-    @apply space-y-2;
+    @apply space-y-1;
   }
 
   .input-label {

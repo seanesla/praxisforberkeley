@@ -1,0 +1,28 @@
+Introduction to Physics
+
+Chapter 1: Newton's Laws of Motion
+
+Newton's First Law (Law of Inertia):
+An object at rest stays at rest and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force.
+
+Newton's Second Law:
+The acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass. This is expressed as F = ma.
+
+Newton's Third Law:
+For every action, there is an equal and opposite reaction.
+
+Key Concepts:
+- Force: A push or pull on an object
+- Mass: The amount of matter in an object
+- Acceleration: The rate of change of velocity
+- Inertia: The tendency of an object to resist changes in motion
+
+Examples:
+1. A ball rolling on a flat surface will continue rolling until friction stops it
+2. Pushing a heavy box requires more force than pushing a light box
+3. When you jump, you push the Earth down and the Earth pushes you up
+
+Practice Problems:
+1. Calculate the force needed to accelerate a 10 kg object at 5 m/s²
+2. If a 50 N force is applied to a 25 kg object, what is its acceleration?
+3. Explain why passengers lurch forward when a car brakes suddenly

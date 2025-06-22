@@ -18,6 +18,8 @@ export default function FlashcardGenerator({ documents, onComplete, onBack }: Fl
   const [generatedCards, setGeneratedCards] = useState<Flashcard[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  console.log('FlashcardGenerator - documents:', documents);
+
   const handleGenerate = async () => {
     if (!selectedDocument) {
       setError('Please select a document');
@@ -30,11 +32,11 @@ export default function FlashcardGenerator({ documents, onComplete, onBack }: Fl
     console.log('Generating flashcards for document:', selectedDocument);
 
     try {
-      const response = await fetch(`/api/flashcards/generate/${selectedDocument}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/flashcards/generate/${selectedDocument}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify({
           numCards,
@@ -43,7 +45,11 @@ export default function FlashcardGenerator({ documents, onComplete, onBack }: Fl
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate flashcards');
+        const errorData = await response.json();
+        if (response.status === 503) {
+          throw new Error(errorData.error || 'AI service is currently unavailable. Please try again later.');
+        }
+        throw new Error(errorData.error || 'Failed to generate flashcards');
       }
 
       const data = await response.json();
@@ -129,19 +135,36 @@ export default function FlashcardGenerator({ documents, onComplete, onBack }: Fl
       <div className="glass rounded-xl p-6 space-y-6">
         {/* Document Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Select Document</label>
-          <select
-            value={selectedDocument}
-            onChange={(e) => setSelectedDocument(e.target.value)}
-            className="w-full px-4 py-2 bg-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">Choose a document...</option>
-            {documents.map((doc) => (
-              <option key={doc.id} value={doc.id}>
-                {doc.title}
-              </option>
-            ))}
-          </select>
+          <label className="text-sm font-medium">
+            Select Document {documents.length > 0 && `(${documents.length} available)`}
+          </label>
+          <div className="relative">
+            <select
+              value={selectedDocument}
+              onChange={(e) => setSelectedDocument(e.target.value)}
+              className="w-full px-4 py-2 pr-10 bg-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white appearance-none cursor-pointer"
+              style={{ WebkitAppearance: 'none' }}
+            >
+              <option value="" className="bg-gray-800 text-gray-300">Choose a document...</option>
+              {documents && documents.length > 0 ? (
+                documents.map((doc) => (
+                  <option key={doc.id} value={doc.id} className="bg-gray-800 text-white">
+                    {doc.title || 'Untitled Document'}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled className="bg-gray-800 text-gray-500">
+                  No documents available
+                </option>
+              )}
+            </select>
+            {/* Custom dropdown arrow */}
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
 
         {/* Number of Cards */}

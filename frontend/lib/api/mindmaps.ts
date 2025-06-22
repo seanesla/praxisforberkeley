@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 export const mindmapsApi = {
   // Get all mind maps for the authenticated user
   async getMindMaps(): Promise<MindMap[]> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) throw new Error('No authentication token');
 
     const response = await fetch(`${API_URL}/api/mindmaps`, {
@@ -24,7 +24,7 @@ export const mindmapsApi = {
 
   // Get a specific mind map
   async getMindMap(id: string): Promise<MindMap> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) throw new Error('No authentication token');
 
     const response = await fetch(`${API_URL}/api/mindmaps/${id}`, {
@@ -43,7 +43,7 @@ export const mindmapsApi = {
 
   // Create a new mind map
   async createMindMap(title: string, data: MindMapData, documentId?: string): Promise<MindMap> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) throw new Error('No authentication token');
 
     const response = await fetch(`${API_URL}/api/mindmaps`, {
@@ -69,7 +69,7 @@ export const mindmapsApi = {
 
   // Generate a mind map from a document
   async generateFromDocument(documentId: string): Promise<MindMap> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) throw new Error('No authentication token');
 
     const response = await fetch(`${API_URL}/api/mindmaps/generate/${documentId}`, {
@@ -91,7 +91,7 @@ export const mindmapsApi = {
 
   // Update a mind map
   async updateMindMap(id: string, updates: { title?: string; data?: MindMapData }): Promise<MindMap> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) throw new Error('No authentication token');
 
     const response = await fetch(`${API_URL}/api/mindmaps/${id}`, {
@@ -113,7 +113,7 @@ export const mindmapsApi = {
 
   // Delete a mind map
   async deleteMindMap(id: string): Promise<void> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) throw new Error('No authentication token');
 
     const response = await fetch(`${API_URL}/api/mindmaps/${id}`, {

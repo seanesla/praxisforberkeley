@@ -99,7 +99,7 @@ export default function FlashcardStudy({ flashcards, onComplete, onBack }: Flash
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify({ difficulty_rating: rating })
       });

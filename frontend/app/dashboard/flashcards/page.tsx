@@ -10,19 +10,8 @@ import { flashcardsApi } from '@/lib/api/flashcards';
 import { ArrowLeftIcon, BookOpenIcon, ChartBarIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import type { Flashcard, Document } from '@/types';
 
-// Temporary documents API until we properly integrate it
-const documentsApi = {
-  getDocuments: async (): Promise<Document[]> => {
-    const response = await fetch('/api/documents', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Failed to fetch documents');
-    const data = await response.json();
-    return data.documents || [];
-  }
-};
+// Import the documents API
+import { documentsApi } from '@/lib/api/documents';
 
 type ViewMode = 'list' | 'study' | 'generate' | 'stats';
 
@@ -50,8 +39,8 @@ export default function FlashcardsPage() {
       console.log('Loaded flashcards:', flashcardsData);
       console.log('Loaded documents:', documentsData);
       
-      setFlashcards(flashcardsData);
-      setDocuments(documentsData);
+      setFlashcards(flashcardsData.flashcards || []);
+      setDocuments(documentsData || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -78,6 +67,10 @@ export default function FlashcardsPage() {
   };
 
   const renderContent = () => {
+    console.log('renderContent - viewMode:', viewMode);
+    console.log('renderContent - documents:', documents);
+    console.log('renderContent - documents length:', documents.length);
+    
     switch (viewMode) {
       case 'study':
         return (

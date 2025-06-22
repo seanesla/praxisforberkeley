@@ -60,7 +60,7 @@ export default function DocumentUploadPage() {
       }
 
       // Success - redirect to documents page
-      router.push('/dashboard/documents');
+      router.push('/documents');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {

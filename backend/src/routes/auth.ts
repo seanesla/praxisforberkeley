@@ -186,6 +186,16 @@ router.get('/me', authenticateToken, async (req, res): Promise<void> => {
   try {
     const authReq = req as AuthRequest;
     
+    if (!authReq.user) {
+      res.status(401).json({ 
+        error: { 
+          message: 'Authentication required',
+          code: 'AUTH_REQUIRED'
+        } 
+      });
+      return;
+    }
+    
     // Get full user data from database if needed
     const { data: userData, error } = await supabase
       .from('users')
@@ -198,8 +208,7 @@ router.get('/me', authenticateToken, async (req, res): Promise<void> => {
       res.json({ 
         user: {
           id: authReq.user.id,
-          email: authReq.user.email,
-          created_at: authReq.user.created_at
+          email: authReq.user.email
         }
       });
       return;
@@ -451,6 +460,98 @@ router.post('/update-password', authenticateToken, validate(Joi.object({
         code: 'INTERNAL_ERROR',
       },
     } as ErrorResponse);
+  }
+});
+
+// Get API keys (masked)
+router.get('/api-keys', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const { data: userSettings } = await supabase
+      .from('user_settings')
+      .select('api_keys')
+      .eq('user_id', req.user!.id)
+      .single();
+
+    if (!userSettings || !userSettings.api_keys) {
+      return res.json({ apiKeys: {} });
+    }
+
+    // Import at runtime to avoid circular dependency
+    const { decrypt, maskApiKey } = await import('../utils/encryption');
+
+    // Decrypt and mask keys for display
+    const maskedKeys: Record<string, string> = {};
+    for (const [provider, encryptedKey] of Object.entries(userSettings.api_keys)) {
+      if (encryptedKey && typeof encryptedKey === 'string') {
+        try {
+          const decryptedKey = decrypt(encryptedKey);
+          maskedKeys[provider] = maskApiKey(decryptedKey);
+        } catch (error) {
+          logger.error(`Failed to decrypt ${provider} key:`, error);
+          maskedKeys[provider] = '***';
+        }
+      }
+    }
+
+    return res.json({ apiKeys: maskedKeys });
+  } catch (error) {
+    logger.error('Error fetching API keys:', error);
+    return res.status(500).json({ error: 'Failed to fetch API keys' });
+  }
+});
+
+// Update API keys (encrypted)
+router.put('/api-keys', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const keysToUpdate = req.body;
+    
+    // Import at runtime to avoid circular dependency
+    const { encrypt, validateApiKey } = await import('../utils/encryption');
+
+    // Validate and encrypt keys
+    const encryptedKeys: Record<string, string> = {};
+    for (const [provider, apiKey] of Object.entries(keysToUpdate)) {
+      if (typeof apiKey === 'string' && apiKey.trim() !== '') {
+        // Validate key format
+        if (!validateApiKey(provider, apiKey)) {
+          return res.status(400).json({ 
+            error: `Invalid ${provider} API key format` 
+          });
+        }
+        
+        // Encrypt the key
+        encryptedKeys[provider] = encrypt(apiKey);
+      }
+    }
+
+    // Get existing keys
+    const { data: userSettings } = await supabase
+      .from('user_settings')
+      .select('api_keys')
+      .eq('user_id', req.user!.id)
+      .single();
+
+    const existingKeys = userSettings?.api_keys || {};
+    const updatedKeys = { ...existingKeys, ...encryptedKeys };
+
+    // Upsert user settings
+    const { error } = await supabase
+      .from('user_settings')
+      .upsert({
+        user_id: req.user!.id,
+        api_keys: updatedKeys,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      logger.error('Error updating API keys:', error);
+      return res.status(500).json({ error: 'Failed to update API keys' });
+    }
+
+    return res.json({ message: 'API keys updated successfully' });
+  } catch (error) {
+    logger.error('Error updating API keys:', error);
+    return res.status(500).json({ error: 'Failed to update API keys' });
   }
 });
 

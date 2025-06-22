@@ -2,7 +2,7 @@ import { ChromaDBConfig } from '../config/chromadb';
 import { Collection } from 'chromadb';
 import { supabase } from '../config/supabase';
 import { AIService } from './ai/aiService';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import { 
   DocumentChunk, 
   ChunkWithPosition, 
@@ -65,7 +65,7 @@ export class VectorStoreService {
       generate: async (texts: string[]) => {
         logger.debug(`Generating embeddings for ${texts.length} texts`);
         try {
-          const embeddings = [];
+          const embeddings: number[][] = [];
           
           for (const text of texts) {
             // Use Claude to generate semantic features as a simple embedding
@@ -397,13 +397,13 @@ export class VectorStoreService {
       logger.debug(`Found ${results.ids[0].length} results`);
       
       // Format results
-      const formattedResults = [];
+      const formattedResults: VectorSearchResult[] = [];
       for (let i = 0; i < results.ids[0].length; i++) {
         formattedResults.push({
           id: results.ids[0][i],
-          text: results.documents[0][i],
+          text: results.documents[0][i] || '',
           metadata: results.metadatas[0][i],
-          distance: results.distances?.[0][i]
+          distance: results.distances?.[0][i] || 0
         });
       }
       
@@ -534,7 +534,7 @@ export class VectorStoreService {
         if (relevance >= minRelevance) {
           formattedResults.push({
             id: results.ids[0][i],
-            text: results.documents[0][i],
+            text: results.documents[0][i] || '',
             metadata: includeMetadata ? results.metadatas[0][i] : undefined,
             distance,
             relevance
@@ -584,7 +584,7 @@ ${results.map((r, i) => `${i + 1}. ${r.text.substring(0, 200)}...`).join('\n\n')
       });
       
       // Parse relevance scores
-      const scores = JSON.parse(response.content) as number[];
+      const scores = response ? JSON.parse(response.content) as number[] : [];
       
       // Update relevance scores and sort
       results.forEach((result, index) => {
