@@ -257,13 +257,9 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           >
             <Dialog.Panel className="mx-auto max-w-2xl transform overflow-hidden rounded-xl bg-gray-800 shadow-2xl ring-1 ring-gray-700 transition-all">
               <Combobox
+                as="div"
                 onChange={(command: Command) => {
                   if (command) command.action();
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && filteredCommands.length === 0) {
-                    handleNaturalLanguage();
-                  }
                 }}
               >
                 <div className="relative">
@@ -275,6 +271,11 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                     className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-100 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                     placeholder="Type a command or search..."
                     onChange={(event) => setQuery(event.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && filteredCommands.length === 0) {
+                        handleNaturalLanguage();
+                      }
+                    }}
                     autoFocus
                   />
                 </div>
