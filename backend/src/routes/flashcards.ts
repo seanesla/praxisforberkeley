@@ -3,7 +3,7 @@ import { authenticateToken } from '../middleware/auth';
 import { supabase } from '../config/supabase';
 import { FlashcardService } from '../services/flashcardService';
 import { AuthRequest } from '../types/express';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 
 const router = express.Router();
 

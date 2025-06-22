@@ -3,7 +3,7 @@ import { supabase } from '../config/supabase';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { MindMapService } from '../services/mindMapService';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 
 const router = express.Router();
 

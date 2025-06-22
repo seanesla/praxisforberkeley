@@ -84,6 +84,22 @@ router.post('/register', validate(authSchemas.register), async (req, res): Promi
       return;
     }
 
+    // Create user profile in users table
+    const { error: profileError } = await supabase
+      .from('users')
+      .insert({
+        id: data.user.id,
+        email: data.user.email!,
+        full_name: name || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+    
+    if (profileError) {
+      logger.error('Failed to create user profile:', profileError);
+      // Continue anyway - auth user exists
+    }
+
     logger.info(`New user registered: ${email}`);
     
     res.status(201).json({
@@ -165,6 +181,50 @@ router.post('/login', validate(authSchemas.login), async (req, res): Promise<voi
   }
 });
 
+// Get current user
+router.get('/me', authenticateToken, async (req, res): Promise<void> => {
+  try {
+    const authReq = req as AuthRequest;
+    
+    // Get full user data from database if needed
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', authReq.user.id)
+      .single();
+    
+    if (error || !userData) {
+      // If no user profile exists, return basic auth data
+      res.json({ 
+        user: {
+          id: authReq.user.id,
+          email: authReq.user.email,
+          created_at: authReq.user.created_at
+        }
+      });
+      return;
+    }
+    
+    res.json({ 
+      user: {
+        id: userData.id,
+        email: userData.email,
+        full_name: userData.full_name,
+        avatar_url: userData.avatar_url,
+        created_at: userData.created_at
+      }
+    });
+  } catch (error) {
+    logger.error('Get current user error:', error);
+    res.status(500).json({
+      error: {
+        message: 'Failed to get user data',
+        code: 'INTERNAL_ERROR',
+      },
+    } as ErrorResponse);
+  }
+});
+
 // Logout
 router.post('/logout', authenticateToken, async (req, res): Promise<void> => {
   try {
@@ -187,6 +247,52 @@ router.post('/logout', authenticateToken, async (req, res): Promise<void> => {
     logger.error('Logout error:', error);
     // Even if logout fails on server, return success to clear client state
     res.json({ message: 'Logout successful' });
+  }
+});
+
+// Refresh token
+router.post('/refresh', async (req, res): Promise<void> => {
+  try {
+    const { refresh_token } = req.body;
+    
+    if (!refresh_token) {
+      res.status(400).json({
+        error: {
+          message: 'Refresh token is required',
+          code: 'REFRESH_TOKEN_REQUIRED'
+        }
+      } as ErrorResponse);
+      return;
+    }
+
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token
+    });
+
+    if (error || !data.session) {
+      logger.warn('Invalid refresh token attempt');
+      res.status(401).json({
+        error: {
+          message: 'Invalid refresh token',
+          code: 'INVALID_REFRESH_TOKEN'
+        }
+      } as ErrorResponse);
+      return;
+    }
+
+    res.json({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      expires_at: data.session.expires_at || Date.now() + 3600000
+    });
+  } catch (error) {
+    logger.error('Refresh token error:', error);
+    res.status(500).json({
+      error: {
+        message: 'Failed to refresh token',
+        code: 'INTERNAL_ERROR'
+      }
+    } as ErrorResponse);
   }
 });
 

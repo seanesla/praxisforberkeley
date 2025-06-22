@@ -82,6 +82,10 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
   const authReq = req as AuthRequest;
   const file = req.file;
   
+  console.log('Upload request received');
+  console.log('File:', file);
+  console.log('User:', authReq.user);
+  
   if (!file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
@@ -127,21 +131,22 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
     }
 
     // Generate embeddings asynchronously
-    vectorStore.addDocument(document.id, content, {
-      title: document.title,
-      user_id: authReq.user!.id
-    }).then(() => {
-      // Update document to mark embeddings as generated
-      supabase
-        .from('documents')
-        .update({ embeddings_generated: true })
-        .eq('id', document.id)
-        .then(() => {
-          logger.info(`Embeddings generated for document ${document.id}`);
-        });
-    }).catch(err => {
-      logger.error('Error generating embeddings:', err);
-    });
+    // TODO: Re-enable when VectorStore is properly configured
+    // vectorStore.addDocument(document.id, content, {
+    //   title: document.title,
+    //   user_id: authReq.user!.id
+    // }).then(() => {
+    //   // Update document to mark embeddings as generated
+    //   supabase
+    //     .from('documents')
+    //     .update({ embeddings_generated: true })
+    //     .eq('id', document.id)
+    //     .then(() => {
+    //       logger.info(`Embeddings generated for document ${document.id}`);
+    //     });
+    // }).catch(err => {
+    //   logger.error('Error generating embeddings:', err);
+    // });
 
     // Add to activity feed
     await supabase
@@ -163,7 +168,24 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
     });
   } catch (error) {
     logger.error('Document upload error:', error);
-    res.status(500).json({ error: 'Failed to upload document' });
+    logger.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    
+    // Clean up uploaded file on error
+    if (file?.path) {
+      try {
+        await fs.unlink(path.join(process.cwd(), file.path));
+      } catch (unlinkError) {
+        logger.error('Failed to clean up file:', unlinkError);
+      }
+    }
+    
+    res.status(500).json({ 
+      error: 'Failed to upload document',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
@@ -187,12 +209,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     // Update embeddings if content changed
-    if (content) {
-      vectorStore.updateDocument(id, content, {
-        title: document.title,
-        user_id: authReq.user!.id
-      });
-    }
+    // TODO: Re-enable when VectorStore is properly configured
+    // if (content) {
+    //   vectorStore.updateDocument(id, content, {
+    //     title: document.title,
+    //     user_id: authReq.user!.id
+    //   });
+    // }
 
     res.json({ document });
   } catch (error) {
@@ -218,7 +241,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 
     // Remove from vector store
-    await vectorStore.deleteDocument(id);
+    // TODO: Re-enable when VectorStore is properly configured
+    // await vectorStore.deleteDocument(id);
 
     res.json({ message: 'Document deleted successfully' });
   } catch (error) {
@@ -238,9 +262,11 @@ router.post('/search', authenticateToken, async (req, res) => {
   
   try {
     // Semantic search using vector store
-    const results = await vectorStore.search(query, limit, {
-      user_id: authReq.user!.id
-    });
+    // TODO: Re-enable when VectorStore is properly configured
+    // const results = await vectorStore.search(query, limit, {
+    //   user_id: authReq.user!.id
+    // });
+    const results: any[] = [];
 
     // Log search query
     await supabase

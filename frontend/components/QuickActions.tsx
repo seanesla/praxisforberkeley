@@ -21,7 +21,7 @@ export function QuickActions() {
       description: 'Import PDFs, Word docs, and more',
       icon: CloudArrowUpIcon,
       color: 'from-purple-600 to-purple-700',
-      onClick: () => router.push('/documents/upload')
+      onClick: () => router.push('/dashboard/documents/upload')
     },
     {
       title: 'Create Smart Note',
@@ -42,7 +42,7 @@ export function QuickActions() {
       description: 'Visualize concepts and connections',
       icon: MapIcon,
       color: 'from-green-600 to-green-700',
-      onClick: () => router.push('/mindmaps/new')
+      onClick: () => router.push('/dashboard/mindmaps/new')
     },
     {
       title: 'Start Podcast',

@@ -18,6 +18,11 @@ const MindMapCanvas = dynamic(
   { ssr: false }
 );
 
+const MindMapCanvasPhysics = dynamic(
+  () => import('@/components/mindmaps/MindMapCanvasPhysics'),
+  { ssr: false }
+);
+
 const MindMapControls = dynamic(
   () => import('@/components/mindmaps/MindMapControls'),
   { ssr: false }
@@ -30,6 +35,8 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [physicsEnabled, setPhysicsEnabled] = useState(false);
+  const [physicsPreset, setPhysicsPreset] = useState<'forceDirected' | 'gravity' | 'space' | 'molecular' | 'network'>('forceDirected');
 
   useEffect(() => {
     loadMindMap();
@@ -160,6 +167,33 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Physics Toggle */}
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={physicsEnabled}
+                  onChange={(e) => setPhysicsEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded accent-purple-500"
+                />
+                <span className="text-sm">Physics</span>
+              </label>
+              
+              {physicsEnabled && (
+                <select
+                  value={physicsPreset}
+                  onChange={(e) => setPhysicsPreset(e.target.value as any)}
+                  className="px-2 py-1 bg-white/10 border border-white/10 rounded text-sm"
+                >
+                  <option value="forceDirected">Force Directed</option>
+                  <option value="gravity">Gravity</option>
+                  <option value="space">Space</option>
+                  <option value="molecular">Molecular</option>
+                  <option value="network">Network</option>
+                </select>
+              )}
+            </div>
+            
             {hasChanges && (
               <div className="flex items-center gap-2 text-sm">
                 <div className="h-2 w-2 bg-yellow-500 rounded-full animate-pulse" />
@@ -182,20 +216,32 @@ export default function MindMapViewPage({ params }: { params: { id: string } }) 
 
       {/* Canvas Container */}
       <div className="flex-1 relative bg-gray-950">
-        <MindMapCanvas
-          data={mindMap.data}
-          onDataChange={handleDataChange}
-          editable={true}
-        />
+        {physicsEnabled ? (
+          <MindMapCanvasPhysics
+            data={mindMap.data}
+            onDataChange={handleDataChange}
+            editable={true}
+            physicsEnabled={physicsEnabled}
+            physicsPreset={physicsPreset}
+          />
+        ) : (
+          <MindMapCanvas
+            data={mindMap.data}
+            onDataChange={handleDataChange}
+            editable={true}
+          />
+        )}
         
-        <MindMapControls
-          onLayoutChange={handleLayoutChange}
-          onZoomIn={() => {}} // These will be handled by ReactFlow internally
-          onZoomOut={() => {}}
-          onFitView={() => {}}
-          onExport={handleExport}
-          canEdit={true}
-        />
+        {!physicsEnabled && (
+          <MindMapControls
+            onLayoutChange={handleLayoutChange}
+            onZoomIn={() => {}} // These will be handled by ReactFlow internally
+            onZoomOut={() => {}}
+            onFitView={() => {}}
+            onExport={handleExport}
+            canEdit={true}
+          />
+        )}
       </div>
     </div>
   );

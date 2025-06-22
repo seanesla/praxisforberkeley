@@ -144,3 +144,24 @@ export async function requireAdmin(
     });
   }
 }
+
+// Socket.io authentication helper
+export async function authenticateSocketToken(token: string): Promise<{ id: string; email: string } | null> {
+  try {
+    // Verify the token with Supabase
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      logger.warn(`Invalid socket token attempt: ${error?.message || 'No user found'}`);
+      return null;
+    }
+
+    return {
+      id: user.id,
+      email: user.email!,
+    };
+  } catch (error) {
+    logger.error('Socket auth error:', error);
+    return null;
+  }
+}

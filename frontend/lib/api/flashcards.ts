@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from '../api';
 import { Flashcard } from '@/types';
 
 export interface FlashcardWithProgress extends Flashcard {
