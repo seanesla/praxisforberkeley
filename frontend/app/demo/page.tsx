@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/auth';
 import { Logo } from '@/components/Logo';
 import { CommandPalette } from '@/components/CommandPalette';
 import { ActivityFeed } from '@/components/ActivityFeed';
@@ -16,21 +15,27 @@ import {
   MapIcon,
   MicrophoneIcon,
   MagnifyingGlassIcon,
-  PlusIcon
+  PlusIcon,
+  BeakerIcon
 } from '@heroicons/react/24/outline';
 
-export default function DashboardPage() {
-  const { user, logout } = useAuth();
+export default function DemoPage() {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [floatingAIOpen, setFloatingAIOpen] = useState(false);
-  const [stats, setStats] = useState({
-    documents: 0,
-    notes: 0,
-    flashcards: 0,
-    studyStreak: 0
+  const [stats] = useState({
+    documents: 12,
+    notes: 28,
+    flashcards: 156,
+    studyStreak: 7
   });
 
-  // Keyboard shortcut for command palette
+  // Demo user
+  const demoUser = {
+    email: 'demo@praxis.ai',
+    user_metadata: { name: 'Demo User' }
+  };
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -49,6 +54,14 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      {/* Demo Banner */}
+      <div className="bg-purple-600 text-white text-center py-2 text-sm">
+        <div className="flex items-center justify-center gap-2">
+          <BeakerIcon className="w-4 h-4" />
+          <span>Demo Mode - Explore all features without signing up!</span>
+        </div>
+      </div>
+
       {/* Header */}
       <header className="border-b border-gray-800 sticky top-0 z-40 bg-gray-900/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,13 +81,13 @@ export default function DashboardPage() {
 
               {/* User Menu */}
               <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-400">{user?.email}</span>
-                <button
-                  onClick={logout}
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                <span className="text-sm text-gray-400">{demoUser.email}</span>
+                <a
+                  href="/register"
+                  className="text-sm bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition-colors"
                 >
-                  Logout
-                </button>
+                  Sign Up
+                </a>
               </div>
             </div>
           </div>
@@ -86,10 +99,10 @@ export default function DashboardPage() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back, {user?.user_metadata?.name || 'there'}!
+            Welcome to Praxis Demo!
           </h1>
           <p className="text-gray-400">
-            Your AI-powered workspace is ready. What would you like to work on today?
+            Experience the full power of AI-driven knowledge management. Try all features below!
           </p>
         </div>
 
@@ -149,6 +162,49 @@ export default function DashboardPage() {
           {/* Right Column - Activity Feed */}
           <div className="lg:col-span-1">
             <ActivityFeed />
+          </div>
+        </div>
+
+        {/* Feature Tips */}
+        <div className="mt-8 glass-card">
+          <h3 className="text-lg font-semibold text-white mb-4">✨ Try These Features</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">1</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">Command Palette</p>
+                <p className="text-gray-400">Press ⌘K to open natural language navigation</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">2</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">AI Assistant</p>
+                <p className="text-gray-400">Press ⌘/ to chat with Claude 4 Sonnet</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">3</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">Quick Actions</p>
+                <p className="text-gray-400">Click any action card to explore features</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">4</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">Document Actions</p>
+                <p className="text-gray-400">Hover over documents to see AI-powered options</p>
+              </div>
+            </div>
           </div>
         </div>
       </main>

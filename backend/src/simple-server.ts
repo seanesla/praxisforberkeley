@@ -3,8 +3,16 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
 import { supabase, checkSupabaseConnection } from './config/supabase';
 import authRoutes from './routes/auth';
+import documentsRoutes from './routes/documents';
+import notesRoutes from './routes/notes';
+import aiRoutes from './routes/ai';
+import commandRoutes from './routes/command';
+import flashcardsRoutes from './routes/flashcards';
+import mindmapsRoutes from './routes/mindmaps';
+import { initializeWebSocket } from './services/websocket';
 import logger, { stream } from './utils/logger';
 
 // Load environment variables
@@ -62,6 +70,12 @@ app.get('/api/test-supabase', async (_req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentsRoutes);
+app.use('/api/notes', notesRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/command', commandRoutes);
+app.use('/api/flashcards', flashcardsRoutes);
+app.use('/api/mindmaps', mindmapsRoutes);
 
 // 404 handler
 app.use((_req, res) => {
