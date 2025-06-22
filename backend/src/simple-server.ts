@@ -3,8 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { createServer } from 'http';
-import { supabase, checkSupabaseConnection } from './config/supabase';
+import { checkSupabaseConnection } from './config/supabase';
 import authRoutes from './routes/auth';
 import documentsRoutes from './routes/documents';
 import notesRoutes from './routes/notes';
@@ -12,7 +11,6 @@ import aiRoutes from './routes/ai';
 import commandRoutes from './routes/command';
 import flashcardsRoutes from './routes/flashcards';
 import mindmapsRoutes from './routes/mindmaps';
-import { initializeWebSocket } from './services/websocket';
 import logger, { stream } from './utils/logger';
 
 // Load environment variables
@@ -69,13 +67,21 @@ app.get('/api/test-supabase', async (_req, res) => {
 });
 
 // Routes
+logger.info('Registering routes...');
 app.use('/api/auth', authRoutes);
+logger.info('✓ Auth routes registered');
 app.use('/api/documents', documentsRoutes);
+logger.info('✓ Documents routes registered');
 app.use('/api/notes', notesRoutes);
+logger.info('✓ Notes routes registered');
 app.use('/api/ai', aiRoutes);
+logger.info('✓ AI routes registered');
 app.use('/api/command', commandRoutes);
+logger.info('✓ Command routes registered');
 app.use('/api/flashcards', flashcardsRoutes);
+logger.info('✓ Flashcards routes registered');
 app.use('/api/mindmaps', mindmapsRoutes);
+logger.info('✓ Mindmaps routes registered');
 
 // 404 handler
 app.use((_req, res) => {

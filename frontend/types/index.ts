@@ -75,18 +75,53 @@ export interface MindMap {
   user_id: string;
   document_id?: string;
   title: string;
-  data: MindMapNode;
+  data: MindMapData;
   created_at: string;
   updated_at: string;
+}
+
+export interface MindMapData {
+  nodes: MindMapNode[];
+  connections: MindMapConnection[];
+  layout?: MindMapLayout;
+  theme?: MindMapTheme;
 }
 
 export interface MindMapNode {
   id: string;
   text: string;
-  children?: MindMapNode[];
-  x?: number;
-  y?: number;
+  type: 'root' | 'main' | 'sub' | 'detail';
+  position?: { x: number; y: number };
+  color?: string;
+  icon?: string;
+  expanded?: boolean;
   metadata?: Record<string, any>;
+}
+
+export interface MindMapConnection {
+  source: string;
+  target: string;
+  type?: 'hierarchy' | 'association' | 'reference';
+  label?: string;
+  style?: {
+    color?: string;
+    width?: number;
+    dashArray?: string;
+    curved?: boolean;
+  };
+}
+
+export interface MindMapLayout {
+  type: 'radial' | 'tree' | 'organic' | 'force';
+  direction?: 'TB' | 'BT' | 'LR' | 'RL';
+  spacing?: { x: number; y: number };
+}
+
+export interface MindMapTheme {
+  name: string;
+  colors: string[];
+  fontFamily?: string;
+  fontSize?: number;
 }
 
 export interface Flashcard {

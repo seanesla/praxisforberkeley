@@ -66,7 +66,7 @@ export async function authenticateToken(
 // Optional auth middleware - doesn't fail if no token
 export async function optionalAuth(
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> {
   try {

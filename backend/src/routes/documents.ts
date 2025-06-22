@@ -2,15 +2,15 @@ import express from 'express';
 import multer from 'multer';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { supabase } from '../config/supabase';
-import { VectorStore } from '../services/vectorStore';
+import { VectorStoreService } from '../services/vectorStore';
 import logger from '../utils/logger';
-import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs/promises';
 import path from 'path';
-import { pdfParse } from 'pdf-parse';
+// @ts-ignore
+import pdfParse from 'pdf-parse';
 
 const router = express.Router();
-const vectorStore = new VectorStore();
+const vectorStore = new VectorStoreService();
 
 // Configure multer for file uploads
 const upload = multer({
