@@ -53,6 +53,7 @@
     "@types/lodash": "^4.17.18",
     "@types/react-resizable": "^3.0.8",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "autoprefixer": "^10.4.21",
     "chart.js": "^4.5.0",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
@@ -62,6 +63,7 @@
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "next": "15.3.3",
+    "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dnd": "^16.0.1",
@@ -78,12 +80,12 @@
     "sharp": "^0.34.2",
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^3.4.17",
     "three": "^0.177.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.53.0",
-    "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -104,7 +106,6 @@
     "keyv": "^5.3.4",
     "open": "^10.1.2",
     "prettier": "^3.2.5",
-    "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.4",
     "vitest-axe": "^0.1.0"

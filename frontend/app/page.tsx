@@ -19,16 +19,16 @@ export default function HomePage() {
   }, [user, loading, router]);
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <div className="min-h-screen auth-gradient flex items-center justify-center">
       <div className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mx-1"></div>
+          <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse mx-1"></div>
           <div
-            className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mx-1"
+            className="w-3 h-3 bg-purple-400 rounded-full animate-pulse mx-1"
             style={{ animationDelay: '0.2s' }}
           ></div>
           <div
-            className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mx-1"
+            className="w-3 h-3 bg-purple-400 rounded-full animate-pulse mx-1"
             style={{ animationDelay: '0.4s' }}
           ></div>
         </div>

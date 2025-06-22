@@ -42,7 +42,7 @@ export function Logo({ size = 'md', className = '' }: LogoProps) {
 export function AnimatedLoginLogo() {
   return (
     <motion.div
-      className="fixed top-8 left-8 z-40"
+      className="flex justify-center mb-8"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
