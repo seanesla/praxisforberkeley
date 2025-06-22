@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { BeakerIcon, MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Logo } from '@/components/Logo';
@@ -13,15 +11,14 @@ import { AnalyticsWidget } from '@/components/AnalyticsWidget';
 export default function DemoPage() {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [floatingAIOpen, setFloatingAIOpen] = useState(false);
-  
-  // Demo data
-  const stats = {
+  const [stats] = useState({
     documents: 12,
     notes: 28,
     flashcards: 156,
     studyStreak: 7
-  };
+  });
 
+  // Demo user
   const demoUser = {
     email: 'demo@praxis.ai',
     user_metadata: { name: 'Demo User' }
@@ -134,6 +131,49 @@ export default function DemoPage() {
           {/* Right Column - Activity Feed */}
           <div className="lg:col-span-1">
             <ActivityFeed />
+          </div>
+        </div>
+
+        {/* Feature Tips */}
+        <div className="mt-8 glass-card">
+          <h3 className="text-lg font-semibold text-white mb-4">✨ Try These Features</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">1</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">Command Palette</p>
+                <p className="text-gray-400">Press ⌘K to open natural language navigation</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">2</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">AI Assistant</p>
+                <p className="text-gray-400">Press ⌘/ to chat with Claude 4 Sonnet</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">3</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">Quick Actions</p>
+                <p className="text-gray-400">Click any action card to explore features</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-purple-400">4</span>
+              </div>
+              <div>
+                <p className="font-medium text-white">Document Actions</p>
+                <p className="text-gray-400">Hover over documents to see AI-powered options</p>
+              </div>
+            </div>
           </div>
         </div>
       </main>

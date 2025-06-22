@@ -1,0 +1,7 @@
+numpy>=1.21.0
+websockets>=10.0
+fastapi>=0.68.0
+uvicorn>=0.15.0
+python-multipart>=0.0.5
+pydantic>=1.8.2
+genesis-sim>=0.2.1  # Genesis Python package
